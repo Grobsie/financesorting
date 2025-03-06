@@ -2,6 +2,7 @@ import os
 import json
 import sys
 import mariadb
+from tags import tagsVar
 
 cred = json.loads(os.getenv("mariaDB_finance"))
 
@@ -17,23 +18,11 @@ def DB_uploadData(cur):
         print("An error occured trying to read the file")
 
 def DB_autoTag(cur):
-    tags = [[{"lidl":1},"boodschappen", "Lidl"],
-            [{"Albert Heijn":1}, "boodschappen", "Albert Heijn"],
-            [{"Jumbo":1}, "boodschappen", "Jumbo"],
-            [{"BEN NEDERLAND":1}, "vaste lasten", "telefoon"],
-            [{"YELLOWBRICK BY BUCKAROO":1}, "auto", "parkeren"],
-            [{"VITENS NV":1}, "vaste lasten", "water"],
-            [{"HNVB LANCYR":1}, "vaste lasten", "auto"],
-            [{"Naar Oranje spaarrekening":9}, "sparen", ""],
-            [{"Vattenfall Customers":1}, "auto", "laden"],
-            [{"Zilveren Kruis Zorgverzekeringen":1}, "vaste lasten", "zorgverzekering"],
-            ]
-    
     try:
         cur.execute(f"SELECT * FROM {cred["table"]} WHERE `tag1` = '' ORDER BY `Datum` DESC LIMIT 1000")
         rows = cur.fetchall()
         for row in rows:
-            for tag in tags:
+            for tag in tagsVar:
                 for key, value in tag[0].items():
                     if key.lower() in row[value].lower():
                         print("found an auto key")

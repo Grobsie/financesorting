@@ -1,4 +1,4 @@
-#goal
+# goal
 
 make a python program which can upload banking details to a mariadb instance (from .csv file)
 

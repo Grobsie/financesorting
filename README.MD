@@ -9,8 +9,8 @@ once all data has been categorized and uploaded I would liek to use the data in 
 
 
 
-<h1>checklist</h1>
--(done) connect to MariaDB
+## checklist
+- [X] connect to MariaDB
 - upload data from .csv file
 -(done) create the auto tagging feature
 - create a nicely looping menu to pick what you want to do

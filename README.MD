@@ -1,12 +1,15 @@
-# goal
+# FinanceSorting
+## Goal
 
-make a python program which can upload banking details to a mariadb instance (from .csv file)
+a program which can assign bank statements to categories to get a better overview of spendings
 
+the program would have a few capabilities:
+- upload banking details to a mariadb instance (from .csv file)
+- auto assign up to two catogories based on a reference list (JSON)
+- manually assign tags
+- have the ability to add new tags to the reference list
 
-second part of the program should be able to auto assign up to two categories
-if no suitable tags can be found, ask user input and ask if these should be added to the tag list
-once all data has been categorized and uploaded I would liek to use the data in a web app to visualize spendings
-
+once the data has been categorized the following step would be to make a web app to visualize the data
 
 
 ## checklist

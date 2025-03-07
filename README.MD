@@ -15,9 +15,5 @@ once all data has been categorized and uploaded I would liek to use the data in 
 - [ ] upload data from .csv file
 - [ ] create the auto tagging feature
 - [ ] create possibility to add new tags
-- [ ]create splash menu
--
--
--
--
--
+- [ ] create splash menu
+

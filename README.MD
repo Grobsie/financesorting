@@ -11,9 +11,11 @@ once all data has been categorized and uploaded I would liek to use the data in 
 
 ## checklist
 - [X] connect to MariaDB
-- upload data from .csv file
--(done) create the auto tagging feature
-- create a nicely looping menu to pick what you want to do
+- [X] create ability to manually add tags
+- [ ] upload data from .csv file
+- [ ] create the auto tagging feature
+- [ ] create possibility to add new tags
+- [ ]create splash menu
 -
 -
 -

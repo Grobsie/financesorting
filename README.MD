@@ -1,6 +1,5 @@
 # FinanceSorting
 ## Goal
-
 a program which can assign bank statements to categories to get a better overview of spendings
 
 the program would have a few capabilities:
@@ -10,7 +9,6 @@ the program would have a few capabilities:
 - have the ability to add new tags to the reference list
 
 once the data has been categorized the following step would be to make a web app to visualize the data
-
 
 ## checklist
 - [X] connect to MariaDB

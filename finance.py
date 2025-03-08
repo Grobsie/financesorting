@@ -6,6 +6,10 @@ from tags import tagsVar
 
 cred = json.loads(os.getenv("mariaDB_finance"))
 
+jsonfile = open("tags.json", "r")
+tagEntries = json.loads(jsonfile.read())
+jsonfile.close()
+
 #pending
 def DB_uploadData(cur):
     inputFilePath = input("please provide the full path to the comma separated CSV file :")
@@ -19,17 +23,27 @@ def DB_uploadData(cur):
 
 def DB_autoTag(cur):
     try:
-        cur.execute(f"SELECT * FROM {cred["table"]} WHERE `tag1` = '' ORDER BY `Datum` DESC LIMIT 1000")
+        # Fetch rows where tag1 is empty
+        cur.execute(f"SELECT * FROM {cred['table']} WHERE `tag1` = '' ORDER BY `Datum` DESC LIMIT 1000")
         rows = cur.fetchall()
+
         for row in rows:
-            for tag in tagsVar:
-                for key, value in tag[0].items():
-                    if key.lower() in row[value].lower():
-                        print("found an auto key")
-                        print("tag[1] = ", tag[1], "and key = ", tag[2])
-                        cur.execute(f"UPDATE {cred["table"]} SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",(tag[1], tag[2], row[-1]))
-                    else:
-                        continue
+            for entry_name, entry_data in tagEntries.items():
+                lookup = entry_data["lookup"]
+                total_checks = len(lookup)  # Number of conditions to meet
+                matches = 0  # Counter for successful matches
+
+                for column, value in lookup.items():
+                    if value.lower() in row[column].lower():
+                        matches += 1  # Increase match count
+
+                # Only update if all conditions are met
+                if matches == total_checks:
+                    print("Updating with", entry_data['tags'][0], entry_data['tags'][1])
+                    cur.execute(
+                        f"UPDATE {cred['table']} SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",
+                        (entry_data["tags"][0], entry_data["tags"][1], row["uniqueID"])
+                    )
     except mariadb.Error as e:
        print(f"error executing to MariaDB Platform: {e}")
 
@@ -68,11 +82,13 @@ try:
 except mariadb.Error as e:
     print(f"error connecting to MariaDB Platform: {e}")
     sys.exit(1)
-cur = conn.cursor()
+cur = conn.cursor(dictionary=True)
 #HERE WE RUN THE DB commands
 
 
 DB_autoTag(cur)
+
+
 
 
 

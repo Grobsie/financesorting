@@ -6,27 +6,28 @@ import csv
 
 cred = json.loads(os.getenv("mariaDB_finance"))
 
-jsonfile = open("tags.json", "r")
-tagEntries = json.loads(jsonfile.read())
-jsonfile.close()
-
 #pending
 def DB_uploadData(cur):
     inputFilePath = input("please provide the full path to the comma separated CSV file :")
     try:
         inputFile = open(inputFilePath, "r")
-        print(inputFile.read())
+        read = csv.reader(inputFile)
+        for row in reversed(list(read)[1:]): #convert the file to a list, remove the first line and then reverse it
+            cols = ".".join(row).split(";") #rows are being split on the , so these have to be combined again but now we use . to fix values
+            print(cols[0], cols[1], cols[3], cols[4], cols[5], cols[6], cols[7], cols[8])
+            #FIX TABLE NAME! THEN IT MIGHT WORK?
+            cur.execute(f'INSERT INTO {cred["table"]} ("Datum","Naam / Omschrijving","Tegenrekening","Code","Af Bij","Bedrag (EUR)","Mutatiesoort","Mededelingen") VALUES (?,?,?,?,?,?,?,?)', (cols[0], cols[1], cols[3], cols[4], cols[5], cols[6], cols[7], cols[8]))
 
-        with open(inputFile, 'r') as textfile:
-            for row in reversed(list(csv.reader(textfile))):
-                print(', '.join(row))
-        #TODO: write data to mariaDB 
         inputFile.close()
-    except:
-        print("An error occured trying to read the file")
+    except  Exception as e:
+        print(e)
 
 def DB_autoTag(cur):
     try:
+        jsonfile = open("tags.json", "r")
+        tagEntries = json.loads(jsonfile.read())
+        jsonfile.close()
+
         cur.execute(f"SELECT * FROM {cred['table']} WHERE `tag1` IS NULL ORDER BY `Datum` DESC LIMIT 1000")
         rows = cur.fetchall()
 
@@ -118,7 +119,7 @@ def DB_manualTag(cur):
                     case "n":
                         tag1 = input("tag1:")
                         tag2 = input("tag2:")
-                        cur.execute(f"UPDATE {cred["table"]} SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",(tag1, tag2, uniqueID))
+                        cur.execute(f"UPDATE {cred['table']} SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",(tag1, tag2, uniqueID))
                         
                         break
                     case _:
@@ -132,6 +133,7 @@ def DB_manualTag(cur):
 try:
     conn = mariadb.connect(user= cred["user"],password= cred["pw"],host= cred["host"],port=3306,database= cred["db"])
     conn.autocommit = True
+    print("connected")
 except mariadb.Error as e:
     print(f"error connecting to MariaDB Platform: {e}")
     sys.exit(1)
@@ -139,9 +141,9 @@ cur = conn.cursor(dictionary=True)
 
 #HERE WE RUN THE DB commands
 
-
+DB_uploadData(cur)
 #DB_manualTag(cur)
-DB_autoTag(cur)
+#DB_autoTag(cur)
 #DB_addsplashscreen()
 
 

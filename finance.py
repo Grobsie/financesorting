@@ -3,24 +3,22 @@ import json
 import sys
 import mariadb
 import csv
+from decimal import Decimal
 
 cred = json.loads(os.getenv("mariaDB_finance"))
 
-#pending
 def DB_uploadData(cur):
     inputFilePath = input("please provide the full path to the comma separated CSV file :")
     try:
         inputFile = open(inputFilePath, "r")
         read = csv.reader(inputFile)
         for row in reversed(list(read)[1:]): #convert the file to a list, remove the first line and then reverse it
-            cols = ".".join(row).split(";") #rows are being split on the , so these have to be combined again but now we use . to fix values
-            print(cols[0], cols[1], cols[3], cols[4], cols[5], cols[6], cols[7], cols[8])
-            #FIX TABLE NAME! THEN IT MIGHT WORK?
-            cur.execute(f'INSERT INTO {cred["table"]} ("Datum","Naam / Omschrijving","Tegenrekening","Code","Af Bij","Bedrag (EUR)","Mutatiesoort","Mededelingen") VALUES (?,?,?,?,?,?,?,?)', (cols[0], cols[1], cols[3], cols[4], cols[5], cols[6], cols[7], cols[8]))
-
+            cols = ".".join(row).replace('"','').split(";") #rows are being split on the , so these have to be combined again but now we use . to fix values
+            cur.execute('INSERT INTO `2025` (`Datum`,`Naam / Omschrijving`,`Tegenrekening`,`Code`,`Af Bij`,`Bedrag (EUR)`,`Mutatiesoort`,`Mededelingen`) VALUES (?,?,?,?,?,?,?,?)', (cols[0], cols[1], cols[3], cols[4], cols[5], Decimal(cols[6].strip('""')), cols[7], cols[8]))
         inputFile.close()
+        print("finished adding the rows")
     except  Exception as e:
-        print(e)
+        print("An error occured", e)
 
 def DB_autoTag(cur):
     try:
@@ -50,6 +48,7 @@ def DB_autoTag(cur):
     except mariadb.Error as e:
        print(f"error executing to MariaDB Platform: {e}")
 
+#pending
 def DB_AddToAutoTag(cur, tag1, tag2):
     while(True):
         answer = input("Would you like to add this to the auto tagger list? y or n ")
@@ -67,6 +66,7 @@ def DB_AddToAutoTag(cur, tag1, tag2):
             case _:
                 print("please respond y or n")
 
+#pending
 def DB_addsplashscreen():
     lookupDict = {}
     tagDict = ["", ""]
@@ -100,6 +100,7 @@ def DB_addsplashscreen():
                 break
             case _:
                 print("please give a valid response")
+
 def DB_manualTag(cur):
     try:
         cur.execute(f"SELECT * FROM {cred['table']} WHERE `tag1` IS NULL ORDER BY `Datum` DESC LIMIT 1000")

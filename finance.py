@@ -26,7 +26,7 @@ def DB_autoTag(cur):
         tagEntries = json.loads(jsonfile.read())
         jsonfile.close()
 
-        cur.execute(f"SELECT * FROM {cred['table']} WHERE `tag1` IS NULL ORDER BY `Datum` DESC LIMIT 1000")
+        cur.execute("SELECT * FROM `2025` WHERE `tag1` IS NULL ORDER BY `Datum` DESC LIMIT 1000")
         rows = cur.fetchall()
 
         for row in rows:
@@ -42,7 +42,7 @@ def DB_autoTag(cur):
                 if matches == total_checks:
                     print("Updating with", entry_data['tags'][0], entry_data['tags'][1])
                     cur.execute(
-                        f"UPDATE {cred['table']} SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",
+                        f"UPDATE `2025` SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",
                         (entry_data["tags"][0], entry_data["tags"][1], row["uniqueID"])
                     )
     except mariadb.Error as e:
@@ -142,9 +142,9 @@ cur = conn.cursor(dictionary=True)
 
 #HERE WE RUN THE DB commands
 
-DB_uploadData(cur)
+#DB_uploadData(cur)
 #DB_manualTag(cur)
-#DB_autoTag(cur)
+DB_autoTag(cur)
 #DB_addsplashscreen()
 
 

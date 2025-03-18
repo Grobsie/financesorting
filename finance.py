@@ -14,7 +14,10 @@ def DB_uploadData(cur):
         read = csv.reader(inputFile)
         for row in reversed(list(read)[1:]): #convert the file to a list, remove the first line and then reverse it
             cols = ".".join(row).replace('"','').split(";") #rows are being split on the , so these have to be combined again but now we use . to fix values
-            cur.execute('INSERT INTO `2025` (`Datum`,`Naam / Omschrijving`,`Tegenrekening`,`Code`,`Af Bij`,`Bedrag (EUR)`,`Mutatiesoort`,`Mededelingen`) VALUES (?,?,?,?,?,?,?,?)', (cols[0], cols[1], cols[3], cols[4], cols[5], Decimal(cols[6].strip('""')), cols[7], cols[8]))
+            amount = Decimal(cols[6].strip('""'))
+            if cols[5] == "Af":
+                amount = -abs(amount)
+            cur.execute('INSERT INTO `2025` (`Datum`,`Naam / Omschrijving`,`Tegenrekening`,`Code`, `Af Bij`, `Bedrag (EUR)`,`Mutatiesoort`,`Mededelingen`) VALUES (?,?,?,?,?,?,?,?)', (cols[0], cols[1], cols[3], cols[4], cols[5], amount, cols[7], cols[8]))
         inputFile.close()
         print("finished adding the rows")
     except  Exception as e:
@@ -26,7 +29,7 @@ def DB_autoTag(cur):
         tagEntries = json.loads(jsonfile.read())
         jsonfile.close()
 
-        cur.execute("SELECT * FROM `2025` WHERE `tag1` IS NULL ORDER BY `Datum` DESC LIMIT 1000")
+        cur.execute("SELECT * FROM `2025` WHERE `tag1` = '' ORDER BY `Datum` DESC LIMIT 1000")
         rows = cur.fetchall()
 
         for row in rows:
@@ -130,6 +133,11 @@ def DB_manualTag(cur):
     except mariadb.Error as e:
        print(f"error executing to MariaDB Platform: {e}")
 
+def getTable(cur):
+    cur.execute("SELECT * FROM `2025` WHERE MONT(`Datum`)=1")
+    result = cur.fetchall()
+    return result
+
 #START PROGRAM HERE
 try:
     conn = mariadb.connect(user= cred["user"],password= cred["pw"],host= cred["host"],port=3306,database= cred["db"])
@@ -152,3 +160,6 @@ DB_autoTag(cur)
 #HERE WE CLOSE THE CONNECTION
 cur.close()
 conn.close()    
+
+#C:\Users\jelmer\Downloads\NL71INGB0008685092_01-02-2025_28-02-2025.csv
+#C:\Users\jelmer\Downloads\NL71INGB0008685092_01-01-2025_31-01-2025.csv

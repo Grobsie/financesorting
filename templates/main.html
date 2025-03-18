@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
@@ -42,43 +42,41 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
   <!-- Header -->
-  <header class="w3-container" style="padding-top:22px">
-    <div>
+    <div class="graph-container">
       <canvas id="Chart"></canvas>
     </div>
-    
-  </header>
 
   <hr>
 
-  <div class="w3-container">
-    <h5>TABLE DIV</h5>
-    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
-      <tr>
-        <td>United States</td>
-        <td>65%</td>
-      </tr>
-      <tr>
-        <td>UK</td>
-        <td>15.7%</td>
-      </tr>
-      <tr>
-        <td>Russia</td>
-        <td>5.6%</td>
-      </tr>
-      <tr>
-        <td>Spain</td>
-        <td>2.1%</td>
-      </tr>
-      <tr>
-        <td>India</td>
-        <td>1.9%</td>
-      </tr>
-      <tr>
-        <td>France</td>
-        <td>1.5%</td>
-      </tr>
-    </table><br>
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+          <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>bank number</th>
+              <th>Code</th>
+              <th>Af/Bij</th>
+              <th>Amount</th>
+              <th>Mutation</th>
+              <th>Comment</th>
+              <th>Tag 1</th>
+              <th>Tag 2</th>
+              <th>ID</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for tableRow in tableData %}
+        <tr>
+            {% for column in tableRow %}
+            <td>{{ column }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>    
+      </table>
+    </div>
   </div>
   <hr>
 
@@ -108,26 +106,50 @@ function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
 }
+
 </script>
 <script>
-  const ctx = document.getElementById('Chart');
+  const categoryColors = {
+    "auto": "#FF6384",
+    "boodschappen": "#36A2EB",
+    "gezondheid": "#FFCE56",
+    "huishoudelijk": "#4BC0C0",
+    "inkomsten": "#9966FF",
+    "luxe": "#FF9F40",
+    "reizen": "#FF9F40",
+    "vaste lasten": "#FF9F40",   
+    "": "#BDBDBD"  // Default for unknown categories
+  };
+  function getColor(category) {
+    return categoryColors[category] || "#BDBDBD";
+  }
+  var dataList = {{ graphData | tojson }} //Jinja, ignore errors
+  console.log(dataList)
+  const categories = [...new Set(dataList.map(d => d[1]))];
+  console.log(categories)
+  const months = [...new Set(dataList.map(d => d[0]))];
+  const datasets = categories.map(category => ({
+    label: category,
+    backgroundColor: getColor(category), // Define your function for colors
+    data: months.map(month => {
+     const entry = dataList.find(d => d[0] === month && d[1] === category);
+     return entry ? entry[2] : 0;
+    }),
+  }));
+  const ctx = document.getElementById('Chart').getContext('2d');
   new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
-      datasets: [{
-        label: '',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-      }]
+      labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      datasets: datasets,
     },
     options: {
+      responsive: true,
       scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
+        x: { stacked: true },
+        y: { stacked: true },
+      },
+    },
   });
 </script>
 

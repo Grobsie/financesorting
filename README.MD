@@ -13,8 +13,8 @@ once the data has been categorized the following step would be to make a web app
 ## checklist
 - [X] connect to MariaDB
 - [X] create ability to manually add tags
-- [ ] upload data from .csv file
+- [X] upload data from .csv file
 - [X] create the auto tagging feature
 - [ ] create possibility to add new tags
-- [ ] create splash menu
+
 

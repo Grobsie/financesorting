@@ -25,7 +25,7 @@ def DB_uploadData(cur):
 
 def DB_autoTag(cur):
     try:
-        jsonfile = open("tags.json", "r")
+        jsonfile = open("static/tags.json", "r")
         tagEntries = json.loads(jsonfile.read())
         jsonfile.close()
 

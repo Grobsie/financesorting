@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>W3.CSS Template</title>
+<title>finance</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-<style>
-html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='myscript.js') }}"></script>
 </head>
 <body class="w3-light-grey">
 
 <!-- Top container -->
 <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
-  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
   <span class="w3-bar-item w3-right">something else</span>
 </div>
 
@@ -26,7 +24,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <h5>Dashboard</h5>
   </div>
   <div class="w3-bar-block">
-    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
     <a href="#" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-users fa-fw"></i> Overview</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> Year</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> Month</a>
@@ -42,100 +40,160 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
   <!-- Header -->
-    <div class="graph-container">
-      <canvas id="Chart"></canvas>
+  <div class="graph-container">
+    <canvas id="Chart"></canvas>  <!-- Default: Chart is shown -->
+    
+    <!-- Hidden Form (Replaces Chart when active) -->
+    <div id="tagForm" style="display: none;">
+      <h2>Add New Tag</h2>
+  
+      <label>Name:</label>
+      <input type="text" id="nameInput" required>
+  
+      <label>Tag 1:</label>
+      <!-- Dropdown for selecting Tag 1 (Form) -->
+      <div class="form-dropdown">
+          <button class="form-dropbtn" id="formTag1Btn">Select</button>
+          <div class="form-dropdown-content" id="formDropdownContent">
+              {% for tag in tagData %}
+              <a href="#" onclick="updateFormTag(event, '{{ tag }}')">{{ tag }}</a>
+              {% endfor %}
+          </div>
+      </div>
+      <input type="hidden" id="formTag1Input">  <!-- Hidden input for form tag -->
+  
+      <label>Tag 2 (Optional):</label>
+      <input type="text" id="tag2Input">
+  
+      <h3>Lookup Fields</h3>
+      <label>Naam / Omschrijving:</label>
+      <input type="text" id="lookupName">
+  
+      <label>Mededelingen:</label>
+      <input type="text" id="lookupMededelingen">
+  
+      <label>Af Bij:</label>
+      <input type="text" id="lookupAfBij">
+  
+      <label>Code:</label>
+      <input type="text" id="lookupCode">
+  
+      <label>Mutatiesoort:</label>
+      <input type="text" id="lookupMutatiesoort">
+  
+      <button onclick="submitTag()">Submit</button>
+      <button type="button" onclick="cancelForm()">Cancel</button>  <!-- Button to cancel -->
     </div>
+  </div>
 
   <hr>
-
+  <!-- table -->  
   <div class="table-container">
+    <button id="submitBtn" onclick="submitData()">Submit</button>
+    <button onclick="openForm()">Add New Tag</button>
     <div class="table-wrapper">
       <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
-          <tr>
-              <th>Date</th>
-              <th>Name</th>
-              <th>bank number</th>
-              <th>Code</th>
-              <th>Af/Bij</th>
-              <th>Amount</th>
-              <th>Mutation</th>
-              <th>Comment</th>
-              <th>Tag 1</th>
-              <th>Tag 2</th>
-              <th>ID</th>
-          </tr>
-      </thead>
-      <tbody>
-        {% for tableRow in tableData %}
-        <tr>
-            {% for column in tableRow %}
-            <td>{{ column }}</td>
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Comment</th>
+                <th>Tag 1</th>
+                <th>Tag 2</th>
+                <th style="display: none;">ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tableRow in tableData %}
+            <tr data-row-id="{{ tableRow['uniqueID'] }}">
+                <td>{{ tableRow['Datum'] }}</td>
+                <td>{{ tableRow['Naam / Omschrijving'] }}</td>
+                <td>{{ tableRow['Bedrag (EUR)'] }}</td>
+                <td>{{ tableRow['Mededelingen'] }}</td>
+
+                <!-- Editable Tag 1 dropdown -->
+                <td contenteditable="true" class="tag1" data-column-index="4" spellcheck="false">
+                    <div class="dropdown">
+                        <button class="dropbtn" id="tag1Btn">{{ tableRow['tag1'] if tableRow['tag1'] else 'Select' }}</button>
+                        <div class="dropdown-content">
+                            {% for tag in tagData %}
+                            <a href="#" onclick="updateTag(event, '{{ tag }}', this)">{{ tag }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </td>
+
+                <!-- Editable Tag 2 as text input -->
+                <td contenteditable="true" class="tag2" data-column-index="5" spellcheck="false">
+                    <input type="text" value="{{ tableRow['tag2'] if tableRow['tag2'] else '' }}" />
+                </td>
+
+                <!-- Unique ID - not editable -->
+                <td class="uniqueID" data-unique-id="{{ tableRow['uniqueID'] }}" style="display: none;">
+                    {{ tableRow['uniqueID'] }}
+                </td>
+            </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>    
+        </tbody>
       </table>
     </div>
   </div>
+
   <hr>
 
   <!-- End page content -->
 </div>
 
 <script>
-// Get the Sidebar
-var mySidebar = document.getElementById("mySidebar");
-
-// Get the DIV with overlay effect
-var overlayBg = document.getElementById("myOverlay");
-
-// Toggle between showing and hiding the sidebar, and add overlay effect
-function w3_open() {
-  if (mySidebar.style.display === 'block') {
-    mySidebar.style.display = 'none';
-    overlayBg.style.display = "none";
-  } else {
-    mySidebar.style.display = 'block';
-    overlayBg.style.display = "block";
-  }
-}
-
-// Close the sidebar with the close button
-function w3_close() {
-  mySidebar.style.display = "none";
-  overlayBg.style.display = "none";
-}
-
-</script>
-<script>
   const categoryColors = {
-    "auto": "#FF6384",
-    "boodschappen": "#36A2EB",
-    "gezondheid": "#FFCE56",
-    "huishoudelijk": "#4BC0C0",
-    "inkomsten": "#9966FF",
-    "luxe": "#FF9F40",
-    "reizen": "#FF9F40",
-    "vaste lasten": "#FF9F40",   
-    "": "#BDBDBD"  // Default for unknown categories
-  };
-  function getColor(category) {
-    return categoryColors[category] || "#BDBDBD";
-  }
-  var dataList = {{ graphData | tojson }} //Jinja, ignore errors
-  console.log(dataList)
-  const categories = [...new Set(dataList.map(d => d[1]))];
-  console.log(categories)
-  const months = [...new Set(dataList.map(d => d[0]))];
-  const datasets = categories.map(category => ({
-    label: category,
-    backgroundColor: getColor(category), // Define your function for colors
-    data: months.map(month => {
-     const entry = dataList.find(d => d[0] === month && d[1] === category);
-     return entry ? entry[2] : 0;
-    }),
+  "auto": "#FF6384",
+  "boodschappen": "#36A2EB",
+  "gezondheid": "#FFCE56",
+  "huishoudelijk": "#4BC0C0",
+  "inkomsten": "#4CAF50",
+  "luxe": "#9C27B0",
+  "reizen": "#00BCD4",
+  "vaste lasten": "#FF9800",
+  "diverse": "#FF0000",
+  "": "#BDBDBD"
+};
+
+// Define the custom order of categories
+  const customOrder = [
+    "inkomsten", 
+    "vaste lasten", 
+    "boodschappen", 
+    "gezondheid", 
+    "auto", 
+    "huishoudelijk", 
+    "luxe", 
+    "reizen", 
+    "diverse",
+    ""
+  ];
+
+  // Your existing data list
+  var dataList = {{ graphData | tojson }}; // Jinja syntax
+
+  // Get unique categories in the custom order
+  const categories = [...new Set(dataList.map(d => d.tag1))];
+  const orderedCategories = categories.sort((a, b) => customOrder.indexOf(a) - customOrder.indexOf(b));
+
+  // Get months from the data
+  const months = [...new Set(dataList.map(d => d.month))];
+
+  // Create the datasets for the chart based on the ordered categories
+  const datasets = orderedCategories.map(category => ({
+      label: category,
+      backgroundColor: categoryColors[category] || "#BDBDBD", // Default grey for unknown categories
+      data: months.map(month => {
+          const entry = dataList.find(d => d.month === month && d.tag1 === category);
+          return entry ? entry.total_spent : 0;
+      }),
   }));
+
+  // Create the chart
   const ctx = document.getElementById('Chart').getContext('2d');
   new Chart(ctx, {
     type: "bar",

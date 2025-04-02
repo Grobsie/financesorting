@@ -11,10 +11,9 @@ the program would have a few capabilities:
 once the data has been categorized the following step would be to make a web app to visualize the data
 
 ## checklist
-- [X] connect to MariaDB
-- [X] create ability to manually add tags
-- [X] upload data from .csv file
-- [X] create the auto tagging feature
-- [ ] create possibility to add new tags
+- retagging has been done in DB (added additional tag)
+- whole dasboard should now be revisited to make it work with three tags
+
+- upload CSV file on dashboard, followed by autotagging
 
 

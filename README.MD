@@ -11,9 +11,8 @@ the program would have a few capabilities:
 once the data has been categorized the following step would be to make a web app to visualize the data
 
 ## checklist
-- retagging has been done in DB (added additional tag)
-- whole dasboard should now be revisited to make it work with three tags
-
-- upload CSV file on dashboard, followed by autotagging
+    -implement third tag in the table, open field but with suggestions
+    -make second tag a drop down list based on selection of tag1
+    -
 
 

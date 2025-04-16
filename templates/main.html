@@ -55,7 +55,7 @@
       <div class="form-dropdown">
           <button class="form-dropbtn" id="formTag1Btn">Select</button>
           <div class="form-dropdown-content" id="formDropdownContent">
-              {% for tag in tagData %}
+              {% for tag in tagDataOne %}
               <a href="#" onclick="updateFormTag(event, '{{ tag }}')">{{ tag }}</a>
               {% endfor %}
           </div>
@@ -101,6 +101,7 @@
                 <th>Comment</th>
                 <th>Tag 1</th>
                 <th>Tag 2</th>
+                <th>Tag 3</th>                
                 <th style="display: none;">ID</th>
             </tr>
         </thead>
@@ -117,7 +118,7 @@
                     <div class="dropdown">
                         <button class="dropbtn" id="tag1Btn">{{ tableRow['tag1'] if tableRow['tag1'] else 'Select' }}</button>
                         <div class="dropdown-content">
-                            {% for tag in tagData %}
+                            {% for tag in tagDataOne %}
                             <a href="#" onclick="updateTag(event, '{{ tag }}', this)">{{ tag }}</a>
                             {% endfor %}
                         </div>
@@ -126,7 +127,19 @@
 
                 <!-- Editable Tag 2 as text input -->
                 <td contenteditable="true" class="tag2" data-column-index="5" spellcheck="false">
-                    <input type="text" value="{{ tableRow['tag2'] if tableRow['tag2'] else '' }}" />
+                  <div class="dropdown">
+                    <button class="dropbtn" id="tag2Btn">{{ tableRow['tag2'] if tableRow['tag2'] else 'Select' }}</button>
+                    <div class="dropdown-content">
+                        {% for tag in tagDataTwo %}
+                        <a href="#" onclick="updateTag(event, '{{ tag }}', this)">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Editable Tag 3 as text input -->
+                <td contenteditable="true" class="tag3" data-column-index="5" spellcheck="false">
+                  <input type="text" value="{{ tableRow['tag3'] if tableRow['tag3'] else '' }}" />
                 </td>
 
                 <!-- Unique ID - not editable -->

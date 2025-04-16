@@ -105,11 +105,14 @@ def home():
         GROUP BY MONTH(`Datum`), `tag1`
         ORDER BY month, `tag1`
     """)
-    tagData = [row['tag1'] for row in get_data("""
+    tagDataOne = [row['tag1'] for row in get_data("""
         SELECT DISTINCT `tag1` FROM `2025` WHERE `tag1` <> ''
     """)]
+    tagDataTwo = [row['tag2'] for row in get_data("""
+        SELECT DISTINCT `tag2` FROM `2025` WHERE `tag2` <> ''
+    """)]
 
-    return render_template("main.html", tableData=tableData, graphData=graphData, tagData=tagData)
+    return render_template("main.html", tableData=tableData, graphData=graphData, tagDataOne=tagDataOne, tagDataTwo=tagDataTwo)
 
 #manually add tags 
 @app.route("/update_tags", methods=["POST"])
@@ -126,13 +129,14 @@ def update_tags():
             for entry in data:
                 tag1 = entry['tag1']
                 tag2 = entry.get('tag2', '')  # Handle missing tag2
+                tag3 = entry.get('tag3', '')
                 uniqueID = entry['uniqueID']
 
                 cur.execute("""
                     UPDATE `2025`
-                    SET `tag1` = ?, `tag2` = ?
+                    SET `tag1` = ?, `tag2` = ?, `tag3` = ?
                     WHERE `uniqueID` = ?
-                """, (tag1, tag2, uniqueID))
+                """, (tag1, tag2, tag3, uniqueID))
 
             conn.commit()
 

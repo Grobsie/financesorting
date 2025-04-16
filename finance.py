@@ -8,7 +8,7 @@ from decimal import Decimal
 cred = json.loads(os.getenv("mariaDB_finance"))
 
 def DB_uploadData(cur):
-    inputFilePath = input("please provide the full path to the comma separated CSV file :")
+    inputFilePath = input("please provide the full path to the ; separated CSV file :")
     try:
         inputFile = open(inputFilePath, "r")
         read = csv.reader(inputFile)
@@ -43,10 +43,10 @@ def DB_autoTag(cur):
                         matches += 1
                 #if all matched, update 
                 if matches == total_checks:
-                    print("Updating with", entry_data['tags'][0], entry_data['tags'][1])
+                    print("Updating with", entry_data['tags'][0], entry_data['tags'][1], entry_data['tags'][2])
                     cur.execute(
-                        f"UPDATE `2025` SET `tag1` = ?, `tag2` = ? WHERE `uniqueID` = ?",
-                        (entry_data["tags"][0], entry_data["tags"][1], row["uniqueID"])
+                        f"UPDATE `2025` SET `tag1` = ?, `tag2` = ?, `tag3` = ? WHERE `uniqueID` = ?",
+                        (entry_data["tags"][0], entry_data["tags"][1], entry_data["tags"][2], row["uniqueID"])
                     )
     except mariadb.Error as e:
        print(f"error executing to MariaDB Platform: {e}")
@@ -150,7 +150,7 @@ cur = conn.cursor(dictionary=True)
 
 #HERE WE RUN THE DB commands
 
-#DB_uploadData(cur)
+DB_uploadData(cur)
 #DB_manualTag(cur)
 DB_autoTag(cur)
 #DB_addsplashscreen()
@@ -160,6 +160,3 @@ DB_autoTag(cur)
 #HERE WE CLOSE THE CONNECTION
 cur.close()
 conn.close()    
-
-#C:\Users\jelmer\Downloads\NL71INGB0008685092_01-02-2025_28-02-2025.csv
-#C:\Users\jelmer\Downloads\NL71INGB0008685092_01-01-2025_31-01-2025.csv

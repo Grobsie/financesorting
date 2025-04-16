@@ -96,11 +96,12 @@ function updateFormTag(event, tag) {
 
 // Update Tag in Table (Edit Functionality)
 function updateTag(event, tag, element) {
-    const row = element.closest('tr');
-    const tag1Cell = row.querySelector('.tag1');
-    const dropdownButton = tag1Cell.querySelector('.dropbtn');
-    if (tag1Cell) {
-        tag1Cell.setAttribute('data-selected-tag', tag);
+    //const row = element.closest('tr');
+    //const tagCell = row.querySelector('.tag1');
+    const tagCell = element.closest('td');
+    const dropdownButton = tagCell.querySelector('.dropbtn');
+    if (tagCell) {
+        tagCell.setAttribute('data-selected-tag', tag);
     }
     if (dropdownButton) {
         dropdownButton.textContent = tag;
@@ -115,15 +116,21 @@ function submitData() {
     rows.forEach(row => {
         const tag1Cell = row.querySelector('.tag1');
         const tag2Cell = row.querySelector('.tag2');
+        const tag3Cell = row.querySelector('.tag3');
         const uniqueIDCell = row.querySelector('.uniqueID');
 
         if (tag1Cell && tag2Cell && uniqueIDCell) {
             const tag1 = tag1Cell.getAttribute('data-selected-tag');
-            const tag2 = tag2Cell.textContent.trim();
+            const tag2 = tag2Cell.getAttribute('data-selected-tag');
+            if(tag3Cell){
+                tag3 = tag3Cell.textContent.trim();
+            } else {
+                tag3 = "";
+            }
             const uniqueID = uniqueIDCell.textContent.trim();
 
             if (tag1) {
-                dataToSend.push({ tag1, tag2, uniqueID });
+                dataToSend.push({ tag1, tag2,tag3, uniqueID });
             }
         }
     });

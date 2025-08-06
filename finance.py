@@ -17,6 +17,7 @@ def DB_uploadData(cur):
             amount = Decimal(cols[6].strip('""'))
             if cols[5] == "Af":
                 amount = -abs(amount)
+            print(cols[0], cols[1], cols[3], cols[4], cols[5], amount, cols[7], cols[8])
             cur.execute('INSERT INTO `2025` (`Datum`,`Naam / Omschrijving`,`Tegenrekening`,`Code`, `Af Bij`, `Bedrag (EUR)`,`Mutatiesoort`,`Mededelingen`) VALUES (?,?,?,?,?,?,?,?)', (cols[0], cols[1], cols[3], cols[4], cols[5], amount, cols[7], cols[8]))
         inputFile.close()
         print("finished adding the rows")
@@ -150,7 +151,7 @@ cur = conn.cursor(dictionary=True)
 
 #HERE WE RUN THE DB commands
 
-DB_uploadData(cur)
+#DB_uploadData(cur)
 #DB_manualTag(cur)
 DB_autoTag(cur)
 #DB_addsplashscreen()
